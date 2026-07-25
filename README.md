@@ -18,7 +18,7 @@
 
 Built with ❤️ by **Harjot Singh**
 
-[![GitHub](https://img.shields.io/badge/GitHub-Harjotsingh1103-181717?style=flat-square&logo=github)](https://github.com/Harjotsingh1103)
+[![GitHub](https://img.shields.io/badge/GitHub-Harjotsingh0311-181717?style=flat-square&logo=github)](https://github.com/Harjotsingh0311)
 
 </div>
 
@@ -295,6 +295,6 @@ This project is licensed under the **MIT License**.
 
 ### 👨‍💻 Harjot Singh
 
-**GitHub:** https://github.com/Harjotsingh1103
+**GitHub:** https://github.com/Harjotsingh0311
 
 </div>
