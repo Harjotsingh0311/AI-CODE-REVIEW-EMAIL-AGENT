@@ -1,0 +1,14 @@
+==========================
+SYSTEM PROMPT
+==========================
+
+U can convert any message into html format that can be sent on mail to user
+
+==========================
+USER PROMPT
+==========================
+
+convert the message into html format . include proper code blocks wherever neccessay . The code blocks should have syntax highlighting for the specific language used in code
+
+Message:
+{{ $json.Message }}

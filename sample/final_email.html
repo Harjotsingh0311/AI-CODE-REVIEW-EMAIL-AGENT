@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Random Forest Classification – Code & Summary</title>
+
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin: 40px;
+    background: #fafafa;
+}
+
+h1 {
+    color: #2c3e50;
+}
+
+h2 {
+    color: #34495e;
+    margin-top: 30px;
+}
+
+pre {
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 15px;
+    overflow-x: auto;
+    border-radius: 6px;
+}
+
+code {
+    font-family: Consolas, Monaco, monospace;
+}
+
+.summary {
+    margin-top: 30px;
+}
+
+.summary ol {
+    margin-left: 25px;
+}
+
+.summary p {
+    margin: 8px 0;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Random Forest Classification – Code &amp; Summary</h1>
+
+<h2>Code with Comments</h2>
+
+<pre><code class="language-python">
+# Import the pandas library for data manipulation and analysis
+import pandas as pd
+
+# Import tools for splitting the data into training and testing sets
+from sklearn.model_selection import train_test_split
+
+# Import the Random Forest classifier algorithm
+from sklearn.ensemble import RandomForestClassifier
+
+# Import metrics for evaluating the model's performance
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix
+)
+
+# Load the dataset from a CSV file into a DataFrame
+df = pd.read_csv("data.csv")
+
+# Separate the features (X) from the target variable (y)
+X = df.drop("target", axis=1)
+y = df["target"]
+
+# Split the data into training and testing subsets
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+
+# Instantiate a Random Forest classifier
+rf = RandomForestClassifier(
+    n_estimators=100,
+    max_depth=None,
+    random_state=42,
+    n_jobs=-1
+)
+
+# Train the model
+rf.fit(X_train, y_train)
+
+# Make predictions
+y_pred = rf.predict(X_test)
+
+# Evaluate the model
+print("Accuracy:", accuracy_score(y_test, y_pred))
+
+print("\nClassification Report:\n")
+print(classification_report(y_test, y_pred))
+
+print("\nConfusion Matrix:\n")
+print(confusion_matrix(y_test, y_pred))
+
+# Calculate feature importance
+importance = pd.DataFrame({
+    "Feature": X.columns,
+    "Importance": rf.feature_importances_
+}).sort_values(by="Importance", ascending=False)
+
+print("\nFeature Importance:")
+print(importance)
+</code></pre>
+
+<div class="summary">
+
+<h2>Code Summary</h2>
+
+<p><strong>What this code does:</strong></p>
+
+<ol>
+    <li><strong>Loads a dataset</strong> from <code>data.csv</code>.</li>
+
+    <li><strong>Separates features and labels</strong> by placing all predictor columns into <code>X</code> and the target column into <code>y</code>.</li>
+
+    <li><strong>Splits the dataset</strong> into training (80%) and testing (20%) sets while preserving the class distribution.</li>
+
+    <li><strong>Creates a Random Forest Classifier</strong> consisting of 100 decision trees.</li>
+
+    <li><strong>Trains the model</strong> using the training dataset.</li>
+
+    <li><strong>Makes predictions</strong> on the unseen test dataset.</li>
+
+    <li><strong>Evaluates performance</strong> using:
+        <ul>
+            <li>Accuracy</li>
+            <li>Classification Report (Precision, Recall, F1-score)</li>
+            <li>Confusion Matrix</li>
+        </ul>
+    </li>
+
+    <li><strong>Computes Feature Importance</strong> to identify which input variables contributed the most to the model's predictions.</li>
+</ol>
+
+<h3>Why this code is useful</h3>
+
+<p>
+This program demonstrates a complete machine learning workflow using a Random Forest Classifier. It covers data loading, preprocessing, model training, prediction, evaluation, and feature importance analysis, making it a good starting point for classification problems.
+</p>
+
+</div>
+
+</body>
+</html>

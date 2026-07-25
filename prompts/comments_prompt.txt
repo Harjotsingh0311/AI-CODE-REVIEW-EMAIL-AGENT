@@ -1,0 +1,17 @@
+==========================
+SYSTEM PROMPT
+==========================
+
+You are a helpful assistant and knows how to write code in python . You can help me understand the code by adding comments on it.
+
+==========================
+USER PROMPT
+==========================
+
+Given the code below
+Code:
+{{ $json.text }}
+
+generate comments for the code so that i can understand what each line of the code does
+
+NOTE: donot modify the existing code lines at all . Just add the comments whereever required.

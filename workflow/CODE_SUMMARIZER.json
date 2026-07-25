@@ -1,0 +1,482 @@
+{
+  "name": "CODE_SUMMARIZER",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "sender": "hsingh17_be24@thapar.edu"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c3b2d536-e681-442f-a6db-9c153a861407",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Y6rMtWU1TMcekEx4",
+          "name": "Gmail account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Given the code below\nCode:\n {{ $json.text }}\n\ngenerate comments for the code so that i can understand what each line of the code does\nNOTE: donot modify the existing code lines at all . Just add the comments whereever required.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a helpful assistant and knows how to write code in python . You can help me understand the code by adding comments on it."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        192,
+        -224
+      ],
+      "id": "2524b8f6-5db6-4f02-a434-7c8e2a91d5fb",
+      "name": "Comments_Addition"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Given the code below\nCode:\n {{ $json.text }}\n\nGenerate a summary of what this code does in very simple language . Do note that the summary contains all the important details there are in the code so that I know what the code is about in a quick glance",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "U are an expert in python  code . U have the ability to summarize code in simple language and have the knack to  cover important details in the summary"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        192,
+        176
+      ],
+      "id": "61287a89-662b-413f-a85f-de85177840bf",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        192,
+        -32
+      ],
+      "id": "67588e2c-fe18-4eca-a346-29ff57a39040",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "GCcqAWzI5uyXDZ2k",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        192,
+        368
+      ],
+      "id": "5c602223-9545-45f1-a255-803710a08cd4",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "GCcqAWzI5uyXDZ2k",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        576,
+        -64
+      ],
+      "id": "e5dbf445-8457-4d90-8869-841ec058080e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        784,
+        -64
+      ],
+      "id": "2efcf3a5-be72-46f0-8325-cf8f99cb62cb",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "sendTo": "hsingh17_be24@thapar.edu",
+        "subject": "Code summary and comments",
+        "emailType": "text",
+        "message": "=Code with comments: \n{{ $json.text[0] }}\n\nSummary code :\n{{ $json.text[1] }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        112
+      ],
+      "id": "ec0fe7ad-e7ff-42ba-acc7-26830393fc3a",
+      "name": "Send a message",
+      "webhookId": "a57e4c5b-1251-48d4-9f6b-a1940b294cf7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Y6rMtWU1TMcekEx4",
+          "name": "Gmail account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3108173a-bbb8-4256-b726-ae8316f47622",
+              "name": "Message",
+              "value": "=Code with comments : {{ $json.text[0] }}\n\nCode with summary : {{ $json.text[1] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        992,
+        -224
+      ],
+      "id": "1a4cb67d-1eb2-4d01-8c06-f7f18b17be28",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=convert the message into html format . include proper code blocks wherever neccessay . The code blocks should have syntax highlighting for the specific language used in code\n\nMessage:\n {{ $json.Message }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "U can convert any message into html format that can be sent  on mail to user"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1200,
+        -224
+      ],
+      "id": "9188d89e-382a-4a03-b833-f4818c6f404c",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        -48
+      ],
+      "id": "738c673a-3627-476d-b717-b16a8a14db8f",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "qPRyrbCtQnjiCfKl",
+          "name": "Groq account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "hsingh17_be24@thapar.edu",
+        "subject": "Code summary and comments",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        -224
+      ],
+      "id": "f6828021-699e-46f4-b04e-e3d266759c76",
+      "name": "Send a message1",
+      "webhookId": "a57e4c5b-1251-48d4-9f6b-a1940b294cf7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Y6rMtWU1TMcekEx4",
+          "name": "Gmail account 5"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "19f9a2830d09b8d3",
+          "threadId": "19f9a2773ac5561f",
+          "labelIds": [
+            "IMPORTANT",
+            "SENT",
+            "INBOX"
+          ],
+          "sizeEstimate": 3563,
+          "headers": {
+            "mime-version": "MIME-Version: 1.0",
+            "date": "Date: Sat, 25 Jul 2026 22:12:30 +0530",
+            "message-id": "Message-ID: <CAGvSZN2_Prd7yZNyv=z-LKR8ioue2ySy4O_JprBmeHJw0XfjGg@mail.gmail.com>",
+            "subject": "Subject: ",
+            "from": "From: Harjot Singh <hsingh17_be24@thapar.edu>",
+            "to": "To: hsingh17_be24@thapar.edu",
+            "content-type": "Content-Type: multipart/alternative; boundary=\"000000000000fe92350657722c15\""
+          },
+          "html": "<div dir=\"ltr\">import pandas as pd<br><br>from sklearn.model_selection import train_test_split<br>from sklearn.ensemble import RandomForestClassifier<br>from sklearn.metrics import (<br>    accuracy_score,<br>    classification_report,<br>    confusion_matrix<br>)<br><br># Load dataset<br>df = pd.read_csv(&quot;data.csv&quot;)   # Replace with your dataset<br><br># Features and Target<br>X = df.drop(&quot;target&quot;, axis=1)  # Replace &#39;target&#39; with your target column<br>y = df[&quot;target&quot;]<br><br># Train-Test Split<br>X_train, X_test, y_train, y_test = train_test_split(<br>    X,<br>    y,<br>    test_size=0.2,<br>    random_state=42,<br>    stratify=y<br>)<br><br># Create Random Forest model<br>rf = RandomForestClassifier(<br>    n_estimators=100,<br>    max_depth=None,<br>    random_state=42,<br>    n_jobs=-1<br>)<br><br># Train<br>rf.fit(X_train, y_train)<br><br># Predictions<br>y_pred = rf.predict(X_test)<br><br># Evaluation<br>print(&quot;Accuracy:&quot;, accuracy_score(y_test, y_pred))<br>print(&quot;\\nClassification Report:\\n&quot;)<br>print(classification_report(y_test, y_pred))<br><br>print(&quot;\\nConfusion Matrix:\\n&quot;)<br>print(confusion_matrix(y_test, y_pred))<br><br># Feature Importance<br>importance = pd.DataFrame({<br>    &quot;Feature&quot;: X.columns,<br>    &quot;Importance&quot;: rf.feature_importances_<br>}).sort_values(by=&quot;Importance&quot;, ascending=False)<br><br>print(&quot;\\nFeature Importance:&quot;)<br>print(importance)</div>\n",
+          "text": "import pandas as pd\n\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import (\n    accuracy_score,\n    classification_report,\n    confusion_matrix\n)\n\n# Load dataset\ndf = pd.read_csv(\"data.csv\")   # Replace with your dataset\n\n# Features and Target\nX = df.drop(\"target\", axis=1)  # Replace 'target' with your target column\ny = df[\"target\"]\n\n# Train-Test Split\nX_train, X_test, y_train, y_test = train_test_split(\n    X,\n    y,\n    test_size=0.2,\n    random_state=42,\n    stratify=y\n)\n\n# Create Random Forest model\nrf = RandomForestClassifier(\n    n_estimators=100,\n    max_depth=None,\n    random_state=42,\n    n_jobs=-1\n)\n\n# Train\nrf.fit(X_train, y_train)\n\n# Predictions\ny_pred = rf.predict(X_test)\n\n# Evaluation\nprint(\"Accuracy:\", accuracy_score(y_test, y_pred))\nprint(\"\\nClassification Report:\\n\")\nprint(classification_report(y_test, y_pred))\n\nprint(\"\\nConfusion Matrix:\\n\")\nprint(confusion_matrix(y_test, y_pred))\n\n# Feature Importance\nimportance = pd.DataFrame({\n    \"Feature\": X.columns,\n    \"Importance\": rf.feature_importances_\n}).sort_values(by=\"Importance\", ascending=False)\n\nprint(\"\\nFeature Importance:\")\nprint(importance)\n",
+          "textAsHtml": "<p>import pandas as pd</p><p>from sklearn.model_selection import train_test_split<br/>from sklearn.ensemble import RandomForestClassifier<br/>from sklearn.metrics import (<br/>    accuracy_score,<br/>    classification_report,<br/>    confusion_matrix<br/>)</p><p># Load dataset<br/>df = pd.read_csv(&quot;data.csv&quot;)   # Replace with your dataset</p><p># Features and Target<br/>X = df.drop(&quot;target&quot;, axis=1)  # Replace &apos;target&apos; with your target column<br/>y = df[&quot;target&quot;]</p><p># Train-Test Split<br/>X_train, X_test, y_train, y_test = train_test_split(<br/>    X,<br/>    y,<br/>    test_size=0.2,<br/>    random_state=42,<br/>    stratify=y<br/>)</p><p># Create Random Forest model<br/>rf = RandomForestClassifier(<br/>    n_estimators=100,<br/>    max_depth=None,<br/>    random_state=42,<br/>    n_jobs=-1<br/>)</p><p># Train<br/><a href=\"http://rf.fit\">rf.fit</a>(X_train, y_train)</p><p># Predictions<br/>y_pred = rf.predict(X_test)</p><p># Evaluation<br/>print(&quot;Accuracy:&quot;, accuracy_score(y_test, y_pred))<br/>print(&quot;\\nClassification Report:\\n&quot;)<br/>print(classification_report(y_test, y_pred))</p><p>print(&quot;\\nConfusion Matrix:\\n&quot;)<br/>print(confusion_matrix(y_test, y_pred))</p><p># Feature Importance<br/>importance = pd.DataFrame({<br/>    &quot;Feature&quot;: X.columns,<br/>    &quot;Importance&quot;: rf.feature_importances_<br/>}).sort_values(by=&quot;Importance&quot;, ascending=False)</p><p>print(&quot;\\nFeature Importance:&quot;)<br/>print(importance)</p>",
+          "date": "2026-07-25T16:42:30.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "hsingh17_be24@thapar.edu",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:hsingh17_be24@thapar.edu\" class=\"mp_address_email\">hsingh17_be24@thapar.edu</a></span>",
+            "text": "hsingh17_be24@thapar.edu"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "hsingh17_be24@thapar.edu",
+                "name": "Harjot Singh"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Harjot Singh</span> &lt;<a href=\"mailto:hsingh17_be24@thapar.edu\" class=\"mp_address_email\">hsingh17_be24@thapar.edu</a>&gt;</span>",
+            "text": "\"Harjot Singh\" <hsingh17_be24@thapar.edu>"
+          },
+          "messageId": "<CAGvSZN2_Prd7yZNyv=z-LKR8ioue2ySy4O_JprBmeHJw0XfjGg@mail.gmail.com>"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Basic LLM Chain": [
+      {
+        "json": {
+          "text": "**Summary of the Code:**\n\n**What the code does:**\n\n1. **Loads a dataset**: It reads a CSV file called \"data.csv\" into a Python environment.\n2. **Prepares the data**: It splits the dataset into two parts: features (all columns except one) and a target variable (the column we're trying to predict).\n3. **Splits the data into training and testing sets**: It randomly selects 20% of the data for testing and uses the remaining 80% for training the model.\n4. **Trains a Random Forest model**: It creates a machine learning model called a Random Forest Classifier, which is good at predicting categorical outcomes.\n5. **Evaluates the model**: It uses the trained model to predict the target variable on the testing data and calculates how accurate it is.\n6. **Prints the results**: It displays the accuracy, classification report, and confusion matrix of the model.\n7. **Features Importance**: It determines which features are most important for the model's predictions and ranks them in order of importance.\n\n**Why the code is useful:**\n\nThis code is useful for anyone who wants to build and evaluate a machine learning model using a Random Forest Classifier. It provides a simple way to understand the performance of the model and identify the most important features for its predictions."
+        }
+      }
+    ],
+    "Comments_Addition": [
+      {
+        "json": {
+          "text": "```python\n# Import the pandas library for data manipulation and analysis\nimport pandas as pd\n\n# Import tools for splitting the data into training and testing sets\nfrom sklearn.model_selection import train_test_split\n\n# Import the Random Forest classifier algorithm\nfrom sklearn.ensemble import RandomForestClassifier\n\n# Import metrics for evaluating the model's performance\nfrom sklearn.metrics import (\n    accuracy_score,          # Calculates the ratio of correct predictions\n    classification_report,   # Provides precision, recall, f1‑score for each class\n    confusion_matrix         # Shows the counts of true vs predicted classes\n)\n\n# Load the dataset from a CSV file into a DataFrame\ndf = pd.read_csv(\"data.csv\")   # Replace with your dataset\n\n# Separate the features (X) from the target variable (y)\nX = df.drop(\"target\", axis=1)  # Drop the target column to get input features\ny = df[\"target\"]              # Target variable (labels)\n\n# Split the data into training and testing subsets\nX_train, X_test, y_train, y_test = train_test_split(\n    X,                         # Feature matrix\n    y,                         # Target vector\n    test_size=0.2,             # 20% of data reserved for testing\n    random_state=42,           # Seed for reproducibility\n    stratify=y                 # Keep class proportions the same in splits\n)\n\n# Instantiate a Random Forest classifier with specified hyperparameters\nrf = RandomForestClassifier(\n    n_estimators=100,          # Number of trees in the forest\n    max_depth=None,            # Trees grow until all leaves are pure or contain <min_samples_split samples\n    random_state=42,           # Seed for reproducibility\n    n_jobs=-1                  # Use all available CPU cores\n)\n\n# Train the Random Forest model on the training data\nrf.fit(X_train, y_train)\n\n# Generate predictions for the test set\ny_pred = rf.predict(X_test)\n\n# Evaluate the model's accuracy on the test set\nprint(\"Accuracy:\", accuracy_score(y_test, y_pred))\n\n# Print a detailed classification report (precision, recall, f1‑score)\nprint(\"\\nClassification Report:\\n\")\nprint(classification_report(y_test, y_pred))\n\n# Print the confusion matrix to see how predictions are distributed across classes\nprint(\"\\nConfusion Matrix:\\n\")\nprint(confusion_matrix(y_test, y_pred))\n\n# Compute feature importance scores from the trained model\nimportance = pd.DataFrame({\n    \"Feature\": X.columns,                # Feature names\n    \"Importance\": rf.feature_importances_  # Corresponding importance values\n}).sort_values(by=\"Importance\", ascending=False)  # Sort descending by importance\n\n# Display the feature importance ranking\nprint(\"\\nFeature Importance:\")\nprint(importance)\n```"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Basic LLM Chain1": [
+      {
+        "json": {
+          "text": "```html\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<title>Random Forest Classification – Code & Summary</title>\n<style>\n  body{font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#333;}\n  h1{color:#2c3e50;}\n  pre{background:#f8f8f8;border:1px solid #ddd;padding:10px;overflow:auto;}\n  code{font-family:Consolas,Monaco,monospace;}\n  .summary{margin-top:20px;}\n  .summary h2{color:#34495e;}\n  .summary ol{margin-left:20px;}\n  .summary p{margin:5px 0;}\n</style>\n</head>\n<body>\n\n<h1>Random Forest Classification – Code & Summary</h1>\n\n<h2>Code with comments</h2>\n<pre><code class=\"language-python\">\n# Import the pandas library for data manipulation and analysis\nimport pandas as pd\n\n# Import tools for splitting the data into training and testing sets\nfrom sklearn.model_selection import train_test_split\n\n# Import the Random Forest classifier algorithm\nfrom sklearn.ensemble import RandomForestClassifier\n\n# Import metrics for evaluating the model's performance\nfrom sklearn.metrics import (\n    accuracy_score,          # Calculates the ratio of correct predictions\n    classification_report,   # Provides precision, recall, f1‑score for each class\n    confusion_matrix         # Shows the counts of true vs predicted classes\n)\n\n# Load the dataset from a CSV file into a DataFrame\ndf = pd.read_csv(\"data.csv\")   # Replace with your dataset\n\n# Separate the features (X) from the target variable (y)\nX = df.drop(\"target\", axis=1)  # Drop the target column to get input features\ny = df[\"target\"]              # Target variable (labels)\n\n# Split the data into training and testing subsets\nX_train, X_test, y_train, y_test = train_test_split(\n    X,                         # Feature matrix\n    y,                         # Target vector\n    test_size=0.2,             # 20% of data reserved for testing\n    random_state=42,           # Seed for reproducibility\n    stratify=y                 # Keep class proportions the same in splits\n)\n\n# Instantiate a Random Forest classifier with specified hyperparameters\nrf = RandomForestClassifier(\n    n_estimators=100,          # Number of trees in the forest\n    max_depth=None,            # Trees grow until all leaves are pure or contain &lt;min_samples_split samples\n    random_state=42,           # Seed for reproducibility\n    n_jobs=-1                  # Use all available CPU cores\n)\n\n# Train the Random Forest model on the training data\nrf.fit(X_train, y_train)\n\n# Generate predictions for the test set\ny_pred = rf.predict(X_test)\n\n# Evaluate the model's accuracy on the test set\nprint(\"Accuracy:\", accuracy_score(y_test, y_pred))\n\n# Print a detailed classification report (precision, recall, f1‑score)\nprint(\"\\nClassification Report:\\n\")\nprint(classification_report(y_test, y_pred))\n\n# Print the confusion matrix to see how predictions are distributed across classes\nprint(\"\\nConfusion Matrix:\\n\")\nprint(confusion_matrix(y_test, y_pred))\n\n# Compute feature importance scores from the trained model\nimportance = pd.DataFrame({\n    \"Feature\": X.columns,                # Feature names\n    \"Importance\": rf.feature_importances_  # Corresponding importance values\n}).sort_values(by=\"Importance\", ascending=False)  # Sort descending by importance\n\n# Display the feature importance ranking\nprint(\"\\nFeature Importance:\")\nprint(importance)\n</code></pre>\n\n<div class=\"summary\">\n  <h2>Code with summary</h2>\n  <p><strong>Summary of the Code:</strong></p>\n\n  <h3>What the code does:</h3>\n  <ol>\n    <li><strong>Loads a dataset</strong>: It reads a CSV file called <code>data.csv</code> into a Python environment.</li>\n    <li><strong>Prepares the data</strong>: It splits the dataset into two parts: features (all columns except one) and a target variable (the column we're trying to predict).</li>\n    <li><strong>Splits the data into training and testing sets</strong>: It randomly selects 20% of the data for testing and uses the remaining 80% for training the model.</li>\n    <li><strong>Trains a Random Forest model</strong>: It creates a machine learning model called a Random Forest Classifier, which is good at predicting categorical outcomes.</li>\n    <li><strong>Evaluates the model</strong>: It uses the trained model to predict the target variable on the testing data and calculates how accurate it is.</li>\n    <li><strong>Prints the results</strong>: It displays the accuracy, classification report, and confusion matrix of the model.</li>\n    <li><strong>Features Importance</strong>: It determines which features are most important for the model's predictions and ranks them in order of importance.</li>\n  </ol>\n\n  <h3>Why the code is useful:</h3>\n  <p>This code is useful for anyone who wants to build and evaluate a machine learning model using a Random Forest Classifier. It provides a simple way to understand the performance of the model and identify the most important features for its predictions.</p>\n</div>\n\n</body>\n</html>\n```\n\nThis HTML snippet includes a properly formatted code block with syntax highlighting (via the `class=\"language-python\"` attribute) and a neatly organized summary section. It can be pasted directly into an email client that supports HTML rendering."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Comments_Addition",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Comments_Addition",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comments_Addition": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3ea9da9a-b30b-4a23-9a82-4bbb0a7cc6e2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2b046f28151b23b8384cef70f64660f708825397b876e63a11f8a4ac0f5beb1c"
+  },
+  "nodeGroups": [],
+  "id": "WfhAgQtG1Mv0nGI4",
+  "tags": []
+}
